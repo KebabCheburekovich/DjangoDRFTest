@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - internal_network
+
+  back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - .:/app_back
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
